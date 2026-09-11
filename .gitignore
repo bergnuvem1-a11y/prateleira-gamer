@@ -1,0 +1,30 @@
+# Configuração da API (chave privada)
+config.js
+google-config.js
+
+# Credenciais Google OAuth
+client_secret*.json
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backups de exportação
+prateleira-gamer-*.json
+
+# Ambiente local
+.env
+node_modules/
+
+# Backups do projeto
+BACKUP-*/

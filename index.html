@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prateleira Gamer</title>
+<style>
+  :root {
+    --wood-1: #000000;
+    --wood-2: #000000;
+    --wood-3: #000000;
+    --wood-dark-1: #000000;
+    --wood-dark-2: #000000;
+    --cyan: #ffffff;
+    --magenta: #ffffff;
+    --paper: #efe6d8;
+    --ink-dim: #b7a794;
+    --depth: 30px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    min-height: 100%;
+    color: var(--paper);
+    font-family: 'DM Sans', -apple-system, sans-serif;
+  }
+  body {
+    background-color: #000000;
+  }
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+  header {
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #fff;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .header-right {
+    display: flex;
+    gap: 12px;
+  }
+  .btn {
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .search-bar {
+    margin-bottom: 32px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .search-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    justify-content: center;
+  }
+  .search-tab {
+    padding: 8px 24px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .search-tab:hover {
+    border-color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.8);
+  }
+  .search-tab.active {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+  }
+  .search-wrapper {
+    position: relative;
+    display: flex;
+    gap: 12px;
+  }
+  #inputBusca {
+    flex: 1;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+  }
+  #inputBusca:focus {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+  }
+  #btnBuscar {
+    padding: 14px 24px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #btnBuscar:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .shelf-frame {
+    background: #000;
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 40px 70px -30px rgba(0,0,0,0.75);
+  }
+  .shelf-unit {
+    background: #000;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .divider {
+    height: 15px;
+    position: relative;
+    background: #000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .divider .neon {
+    position: absolute;
+    left: 4%; right: 4%;
+    top: 1px;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.1);
+    box-shadow: none;
+  }
+  .row {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 26px;
+    padding: 20px 24px 0;
+    min-height: 250px;
+    background: #000;
+    overflow: hidden;
+  }
+  .row .tint {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+  .floor {
+    height: 20px;
+    background: #000;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
+  }
+  .slot {
+    position: relative;
+    z-index: 1;
+    width: 150px;
+    perspective: 1600px;
+    padding-top: 6px;
+    padding-bottom: 40px;
+  }
+  .case3d {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 150 / 190;
+    transform-style: preserve-3d;
+    transform: rotateX(9deg) rotateY(-18deg);
+    transition: transform 0.5s ease;
+    cursor: pointer;
+    filter: drop-shadow(0 16px 18px rgba(0,0,0,0.55));
+  }
+  .slot:hover .case3d {
+    transform: rotateX(7deg) rotateY(-12deg);
+  }
+  .tray, .lid {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+  .tray-back {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc(-1 * var(--depth)));
+    background: var(--back-art);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+    pointer-events: none;
+  }
+  .tray-spine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(-1 * var(--depth));
+    width: var(--depth);
+    transform-origin: right center;
+    transform: rotateY(90deg);
+    background: var(--spine-art);
+  }
+  .tray-top {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(-1 * var(--depth));
+    height: var(--depth);
+    transform-origin: bottom center;
+    transform: rotateX(90deg);
+    background: var(--edge-art);
+  }
+  .tray-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(-1 * var(--depth));
+    height: var(--depth);
+    transform-origin: top center;
+    transform: rotateX(-90deg);
+    background: var(--edge-art);
+  }
+  .disc {
+    position: relative;
+    width: 68%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    transform: translateZ(6px);
+    background:
+      radial-gradient(circle at 38% 32%, rgba(255,255,255,0.75), rgba(255,255,255,0) 26%),
+      conic-gradient(from 90deg, #e7ebef, #aab2bd, #e7ebef, #7d8592, #e7ebef, #c3c9d1, #e7ebef);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.55);
+    animation: spin 3s linear infinite;
+    animation-play-state: paused;
+    pointer-events: auto;
+    z-index: 100;
+  }
+  .clickable-disc {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .clickable-disc:hover {
+    transform: translateZ(8px) scale(1.05);
+    filter: brightness(1.2);
+    box-shadow: 0 12px 30px rgba(66, 133, 244, 0.4);
+  }
+  .case3d.is-open .disc {
+    animation-play-state: running;
+  }
+  @keyframes spin {
+    from { transform: translateZ(6px) rotate(0deg); }
+    to { transform: translateZ(6px) rotate(360deg); }
+  }
+  .disc::after {
+    content: "";
+    position: absolute;
+    inset: 38%;
+    border-radius: 50%;
+    background: var(--back-art);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
+  }
+  .disc::before {
+    content: "";
+    position: absolute;
+    inset: 47%;
+    border-radius: 50%;
+    background: #0a0907;
+  }
+  .lid {
+    transform-origin: left center;
+    transform: rotateY(0deg);
+    transition: transform 0.9s cubic-bezier(.25,.85,.2,1.15);
+  }
+  .case3d.is-open .lid {
+    transform: rotateY(-180deg);
+  }
+  .lid-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+  }
+  
+  .lid-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: linear-gradient(135deg, var(--back-art) 0%, rgba(0,0,0,0.9) 100%);
+    padding: 15px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+    overflow-y: auto;
+  }
+  
+  .game-info {
+    width: 100%;
+    color: #fff;
+    text-align: left;
+  }
+  
+  .info-item {
+    margin: 4px 0;
+    font-size: 8px;
+    color: rgba(255,255,255,0.95);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+    line-height: 1.4;
+  }
+  
+  .info-label {
+    display: inline-block;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-size: 7px;
+    margin-right: 4px;
+    opacity: 0.8;
+  }
+  
+  .info-description {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    font-size: 7px;
+    line-height: 1.3;
+    color: rgba(255,255,255,0.85);
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+  }
+  
+  /* Template overlay - imagem do PS5/Xbox template por cima */
+  .case-template {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    background-image: var(--template);
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    mix-blend-mode: normal;
+    backface-visibility: hidden;
+  }
+  
+  .lid-face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 30%);
+    pointer-events: none;
+  }
+  .lid-face::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 42%, rgba(0,0,0,0.68) 100%);
+    pointer-events: none;
+  }
+  .lid-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -6px;
+    width: 6px;
+    transform-origin: left center;
+    transform: rotateY(90deg);
+    background: var(--art-dark);
+  }
+  .game-cover {
+    position: absolute;
+    /* Posição exata para encaixar na moldura-3d.png */
+    left: 9.8%;
+    top: 11.5%;
+    width: 80.7%;
+    height: 79.5%;
+    z-index: 2;
+    background: #000;
+    overflow: hidden;
+    /* Clip-path para seguir o formato da moldura */
+    clip-path: polygon(0 0, 100% 1.2%, 100% 97%, 0 100%);
+    backface-visibility: hidden;
+  }
+  .game-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .meta {
+    position: relative;
+    margin-top: 8px;
+    padding: 4px;
+    text-align: center;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .game-title {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 28px;
+    flex: 1;
+  }
+  .btn-drive-mini {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 4px;
+    background: linear-gradient(135deg, #4285f4 0%, #3367d6 100%);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .btn-drive-mini svg {
+    width: 14px;
+    height: 14px;
+  }
+  .btn-drive-mini:hover {
+    background: linear-gradient(135deg, #5a95f5 0%, #4285f4 100%);
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(66, 133, 244, 0.5);
+  }
+  .btn-drive-mini:active {
+    transform: scale(0.95);
+  }
+
+  /* ── Badge de conquistas (frente da capa) ── */
+  .achievement-badge {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.82);
+    border: 1px solid rgba(255, 215, 0, 0.5);
+    border-radius: 10px;
+    padding: 2px 6px;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.6), 0 0 6px rgba(255,215,0,0.15);
+  }
+  .ach-icon {
+    font-size: 7px;
+    line-height: 1;
+  }
+  .ach-count {
+    font-size: 6.5px;
+    font-weight: 800;
+    color: #ffd700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  
+  /* ── Badge ZERADO (frente da capa) ── */
+  .zerado-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 3px 6px;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    font-size: 6px;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+  .zerado-badge span:first-child {
+    font-size: 7px;
+  }
+
+  /* ── Seção de conquistas no verso do DVD ── */
+  .ach-section {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(255,215,0,0.2);
+  }
+  .ach-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-top: 3px;
+    overflow: hidden;
+  }
+  .ach-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #ffd700, #ffaa00);
+    transition: width 0.6s ease;
+    box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+  }
+  
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(255,255,255,0.3);
+  }
+  .empty-state svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    opacity: 0.2;
+  }
+  #resultadosBusca {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  #resultadosBusca.show {
+    display: block;
+  }
+  .search-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .search-result:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  .search-result img {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .search-result-info {
+    flex: 1;
+  }
+  .search-result-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .search-result-meta {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+  }
+  .btn-add {
+    padding: 8px 16px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-add:disabled {
+    background: rgba(255,255,255,0.2);
+    cursor: not-allowed;
+  }
+  #modalLoading {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  #modalLoading.show {
+    display: flex;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  #toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+  }
+  .toast {
+    background: rgba(255,255,255,0.95);
+    color: #000;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .btn-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    background: #ef4444;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .slot:hover .btn-remove {
+    opacity: 1;
+  }
+  .btn-zerado {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    color: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-zerado.zerado {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+  }
+  .slot:hover .btn-zerado {
+    opacity: 1;
+  }
+  #selectOrdenacao {
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 12px;
+    outline: none;
+  }
+  #selectOrdenacao option {
+    background: #0a0a0a;
+    color: #fff;
+    padding: 8px;
+  }
+  
+  /* Modal Custom */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+  }
+  .modal-custom {
+    background: #1a1a1a;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .modal-custom-header {
+    padding: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-custom-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+  }
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .modal-custom-body {
+    padding: 24px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+  }
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .form-group select option {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 8px;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+  }
+  .form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .preview-capa {
+    margin-top: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .preview-capa img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .modal-custom-footer {
+    padding: 20px 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  .btn-primary {
+    background: #fff !important;
+    color: #000 !important;
+    font-weight: 600;
+  }
+  .btn-primary:hover {
+    background: #e0e0e0 !important;
+  }
+  .btn-secondary {
+    background: rgba(255,255,255,0.05) !important;
+    color: #fff !important;
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.08) !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <div class="header-left">
+      <div class="api-status">
+        <span class="status-dot"></span>
+        <span id="contadorJogos">0 jogos</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-primary" id="btnAddCustom">+ Custom</button>
+      <button class="btn" id="btnSyncDrive" style="background: #4285f4 !important; color: #fff !important; border-color: #4285f4 !important;">🔄 Sync Drive</button>
+      <button class="btn" id="btnExportar">Exportar</button>
+      <label class="btn" style="cursor: pointer;">
+        Importar
+        <input type="file" id="inputImportar" accept=".json" style="display: none;">
+      </label>
+      <button class="btn" id="btnLimpar">Limpar</button>
+      <select id="selectOrdenacao">
+        <option value="adicionado">Recém adicionados</option>
+        <option value="nome">A-Z</option>
+        <option value="ano-desc">Mais recentes</option>
+        <option value="ano-asc">Mais antigos</option>
+        <option value="console">Por Console</option>
+        <option value="zerados">Zerados</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="search-bar">
+    <div class="search-tabs">
+      <button class="search-tab active" data-tab="buscar">Buscar</button>
+      <button class="search-tab" data-tab="colecao">Coleção</button>
+    </div>
+    <div class="search-wrapper">
+      <input type="text" id="inputBusca" placeholder="Digite o nome do jogo...">
+      <button id="btnBuscar">🔍</button>
+      <div id="resultadosBusca"></div>
+    </div>
+  </div>
+
+  <div class="shelf-frame">
+    <div class="shelf-unit" id="shelfUnit">
+      <div class="divider"><div class="neon"></div></div>
+      <div class="row">
+        <div class="tint"></div>
+        <div class="empty-state">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+          <p>Nenhum jogo adicionado</p>
+        </div>
+      </div>
+      <div class="divider"><div class="neon"></div></div>
+      <div class="floor"></div>
+    </div>
+  </div>
+</div>
+
+<div id="modalLoading">
+  <div class="spinner"></div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- Modal para adicionar jogo customizado -->
+<div id="modalCustom" class="modal-overlay" style="display: none;">
+  <div class="modal-custom">
+    <div class="modal-custom-header">
+      <h2>Adicionar Jogo Customizado</h2>
+      <button class="modal-close" onclick="fecharModalCustom()">×</button>
+    </div>
+    <div class="modal-custom-body">
+      <div class="form-group">
+        <label for="customNome">Nome do Jogo *</label>
+        <input type="text" id="customNome" placeholder="Ex: The Last of Us Part II" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="customCapa">Capa do Jogo (Imagem) *</label>
+        <input type="file" id="customCapa" accept="image/*" required>
+        <div id="previewCapa" class="preview-capa" style="display: none;">
+          <img id="previewCapaImg" src="" alt="Preview">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="customAno">Ano de Lançamento</label>
+        <input type="number" id="customAno" placeholder="Ex: 2020" min="1970" max="2030">
+      </div>
+      
+      <div class="form-group">
+        <label for="customPlataforma">Plataforma</label>
+        <select id="customPlataforma">
+          <option value="PS5">PlayStation 5</option>
+          <option value="PS4">PlayStation 4</option>
+          <option value="PS3">PlayStation 3</option>
+          <option value="PS2">PlayStation 2</option>
+          <option value="XBOX">Xbox Series X|S</option>
+          <option value="XBOX ONE">Xbox One</option>
+          <option value="XBOX 360">Xbox 360</option>
+          <option value="SWITCH">Nintendo Switch</option>
+          <option value="PC">PC</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="customDriveUrl">Link dos Saves (Google Drive) - Opcional</label>
+        <input type="text" id="customDriveUrl" placeholder="https://drive.google.com/drive/folders/...">
+        <small style="color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 4px; display: block;">Cole o link da pasta do Google Drive com os saves do jogo</small>
+      </div>
+    </div>
+    <div class="modal-custom-footer">
+      <button class="btn btn-secondary" onclick="fecharModalCustom()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarJogoCustom()">Adicionar à Prateleira</button>
+    </div>
+  </div>
+</div>
+
+<!-- Google Drive API -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script src="google-config.js"></script>
+<script src="drive-sync.js"></script>
+
+</body>
+</html>
